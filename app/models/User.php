@@ -1,17 +1,18 @@
 <?php
-
-abstract class User {
+require_once APPROOT . '/librearies/Model.php'; 
+  class User extends Model {
+    private $userID;
     private $name;
     private $email;
     private $password;
 
     public function __construct() {
-
+        parent::__construct('users');
     }
 
     public function __get($proprety){
         if (property_exists($this , $proprety)) {
-            return $this->$proprety
+            return $this->$proprety;
         }
     }
 
@@ -21,11 +22,7 @@ abstract class User {
         }
     }
 
-    public function login($email , $password){
-        try {
-            
-        } catch (Exception $e) {
-            return echo $e->getMessage()
-        }
-    }
+
+
+
 }

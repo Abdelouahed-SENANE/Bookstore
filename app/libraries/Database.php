@@ -9,7 +9,6 @@ class Database {
     private $pass = DB_PASS;
     private $database__host;
 
-
     private function __construct()
     {
         $dsn = "mysql:host" . $this->host . ";dbname=" . $this->name;
@@ -24,7 +23,7 @@ class Database {
         if (is_null(self::$instance)) {
             return new self();
         }
-        return new self();
+        return self::$instance;
     }
     public function connect(){return $this->database__host;}
 }
