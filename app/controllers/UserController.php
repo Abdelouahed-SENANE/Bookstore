@@ -6,15 +6,18 @@ class UserController extends Controller
 {
     use ApiResponse;
     private $userRepository;
+    private $adminRepository;
+    private $customerRepositoy;
 
-    public function __construct(UserRepository $userRepository)
+    public function __construct(UserRepository $userRepository , AdminRepository $adminRepository , CustomerRepositoy $customerRepositoy)
     {
         $this->userRepository = $userRepository;
+        $this->adminRepository = $adminRepository;
+        $this->customerRepositoy = $customerRepositoy;
     }
     /** Login Function */
     public function login()
     {
-
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $email = filter_var($_POST['email'], FILTER_SANITIZE_EMAIL);
             $password = trim($_POST['password']);
@@ -36,7 +39,6 @@ class UserController extends Controller
             } else {
                 $this->error($errors = [] ,'Your password is not correct', 400);
                 return;
-
             }
         }
     }
@@ -57,7 +59,17 @@ class UserController extends Controller
                 $newUser->__set($validateData['name'] , 'name');
                 $newUser->__set($validateData['email'] , 'email');
                 $newUser->__set($validateData['password'] , 'password');
-                $this->userRepository->store($newUser);
+                $lastUserId = $this->userRepository->store($newUser);
+                if (isset($_POST['role']) && $_POST['role'] == 'ADMIN') {
+                    $newAdmin = new Admin();
+                    $newAdmin->__set($lastUserId , 'userID');
+                    $this->adminRepository->store($newAdmin);
+                }
+                if (isset($_POST['role']) && $_POST['role'] == 'CUSTOMER`') {
+                    $newCustomer = new Customer();
+                    $newCustomer->__set($lastUserId , 'userID');
+                    $this->customerRepositoy->store($newCustomer);
+                }
                 $data = ['newUser' => $newUser];
                 $this->success($data, 'User Registred succefully.');
                 return;
@@ -98,7 +110,7 @@ class UserController extends Controller
            }
         }
     }
-
+    /** Funtcion to Delete User  */
     public function deleteUser(){
         if ($_SERVER['REQUEST_METHOD'] === "POST") {
             if (isset($_POST['userID'])) {

@@ -45,6 +45,7 @@ abstract class Model
             $query = "INSERT INTO {$this->tablename} ({$columns} VALUES {$placeholders})";
             $statement = $this->connection->prepare($query);
             $statement->execute(array_values($data));
+            return $this->connection->lastInsertId();
         } catch (Exception $e) {
             die("Error throw database" . $e->getMessage());
         }
@@ -92,8 +93,8 @@ abstract class Model
             $statement = $this->connection->prepare("SELECT * FROM {$this->tablename} WHERE $column = ?");
             $statement->bindParam(1 , $value);
             $statement->execute([$value]);
-            $user = $statement->fetch();
-            return $user;
+            $object = $statement->fetch();
+            return $object;
         } catch (Exception $e) {
             die("Error throw database" . $e->getMessage()); 
         }
