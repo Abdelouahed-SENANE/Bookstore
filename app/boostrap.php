@@ -1,6 +1,8 @@
 
 <?php
+session_start();
 require_once 'config/config.php';
+require_once APPROOT . '/helpers/validationForm.php';
 
 
 function Autoloader($class) {

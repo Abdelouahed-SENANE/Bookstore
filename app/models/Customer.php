@@ -6,6 +6,20 @@
         {
             
         }
-
+        public function __get($proprety)
+        {
+            if (property_exists($this , $proprety)) {
+                return $this->$proprety;
+            }
+            return null;
+        }
+        
+        public function __set($value, $proprety)
+        {
+            if (property_exists($this , $proprety)) {
+                return $this->$proprety = $value;
+            }
+            return null;
+        }
         
     }

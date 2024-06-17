@@ -1,6 +1,5 @@
 
 <?php
-    require_once APPROOT . '/helpers/validationForm.php';
 
 class UserController extends Controller
 {
@@ -8,12 +7,14 @@ class UserController extends Controller
     private $userRepository;
     private $adminRepository;
     private $customerRepositoy;
+    private $cartRepository;
 
-    public function __construct(UserRepository $userRepository , AdminRepository $adminRepository , CustomerRepositoy $customerRepositoy)
+    public function __construct(UserRepository $userRepository , AdminRepository $adminRepository , CustomerRepositoy $customerRepositoy , CartRepository $cartRepository)
     {
         $this->userRepository = $userRepository;
         $this->adminRepository = $adminRepository;
         $this->customerRepositoy = $customerRepositoy;
+        $this->cartRepository = $cartRepository;
     }
     /** Login Function */
     public function login()
@@ -21,7 +22,6 @@ class UserController extends Controller
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $email = filter_var($_POST['email'], FILTER_SANITIZE_EMAIL);
             $password = trim($_POST['password']);
-
             $user = $this->userRepository->getUserByEmail($email);
             if (!$user) {
                 $this->error($errors = [] ,'Your credentials are not correct', 400);
@@ -69,6 +69,9 @@ class UserController extends Controller
                     $newCustomer = new Customer();
                     $newCustomer->__set($lastUserId , 'userID');
                     $this->customerRepositoy->store($newCustomer);
+                    $newCart = new Cart();
+                    $newCart->__set('userID' , $lastUserId);
+                    $this->cartRepository->store($newCart);
                 }
                 $data = ['newUser' => $newUser];
                 $this->success($data, 'User Registred succefully.');

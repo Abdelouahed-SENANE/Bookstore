@@ -82,7 +82,7 @@
                 $query = "SELECT * FROM {$this->tablename} WHERE {$column} = ?";
                 $statement = $this->connection->prepare($query);
                 $statement->execute([$value]);
-                $statement->fetchAll();
+                return $statement->fetchAll();
             } catch (Exception $e) {
                 die("Error throw database" . $e->getMessage()); 
             }

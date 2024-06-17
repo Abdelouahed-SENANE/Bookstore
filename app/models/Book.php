@@ -1,5 +1,4 @@
 <?php 
-require_once APPROOT . '/libraries/Model.php';
 class Book extends Model {
     
     private int $bookID;
