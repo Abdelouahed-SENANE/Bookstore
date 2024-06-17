@@ -96,7 +96,7 @@ class UserController extends Controller
             if ($validated['isValid']) {
                 $validateData = $validated['data'];
                 $updateUser = new User();
-                $updateUser->__set($_POST['userID'] , 'userID');
+                $updateUser->__set($_SESSION['userID'] , 'userID');
                 $updateUser->__set($validateData['name'] , 'name');
                 $updateUser->__set($validateData['email'] , 'email');
                 $updateUser->__set($validateData['password'] , 'password');

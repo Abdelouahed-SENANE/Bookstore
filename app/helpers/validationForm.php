@@ -131,4 +131,38 @@ function uploadImage($file) {
         return true;
     } else {
         return false;
-    }}
+    }
+}
+
+function validateCategoryData($data)
+{
+    $errors = ['errTitle' => '', 'errDescription' => ''];
+    $validatedData = [];
+
+    if (empty($data['title'])) {
+        $errors['errTitle'] = 'Title is required.';
+    } else {
+        $validatedData['title'] = htmlspecialchars($data['title']);
+    }
+
+    if (empty($data['description'])) {
+        $errors['errDescription'] = 'Description is required.';
+    } else {
+        $validatedData['description'] = htmlspecialchars($data['description']);
+    }
+
+    $hasErrors = array_filter($errors);
+
+    if (!$hasErrors) {
+        return [
+            'isValid' => true,
+            'data' => $validatedData,
+        ];
+    } else {
+        return [
+            'isValid' => false,
+            'errors' => $errors,
+        ];
+    }
+}
+
