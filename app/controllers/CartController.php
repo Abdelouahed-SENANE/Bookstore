@@ -4,16 +4,18 @@ class CartController extends Controller
     use ApiResponse;
     private $cartItemRepository;
     private $cartRepository;
+    private $bookRepository;
 
-    public function __construct(CartRepository $cart, CartItemRepository $cartItem)
+    public function __construct(CartRepository $cart, CartItemRepository $cartItem, BookRepository $book)
     {
         $this->cartRepository = $cart;
         $this->cartItemRepository = $cartItem;
+        $this->bookRepository = $book;
     }
 
     public function addToCart()
     {
-    // Add Book From Cart items
+        // Add Book From Cart items
         if ($_SERVER['METHOD_REQUEST'] === "POST") {
             try {
                 if (!isset($_SESSION['user']['userID'])) {
@@ -26,24 +28,31 @@ class CartController extends Controller
                     $this->error([], 'Cart not found', 404);
                     return;
                 }
-    
+
                 if (!isset($_POST['bookID'])) {
                     $this->error([], 'Book not found', 404);
                     return;
                 }
                 $bookID = $_POST['bookID'];
                 $quantity = $_POST['quantity'];
-                $this->cartItemRepository->addToCart($cart->cartID , $bookID , $quantity);
-                $this->success([] ,  'Book added to cart successfully.');
+                $book = $this->bookRepository->findBookById($bookID);
+
+                if ($book->quantity < 1) {
+                    $this->error([], 'Book out of stock', 404);
+                    return;
+                }
+                $this->cartItemRepository->addToCart($cart->cartID, $bookID, $quantity);
+                $this->success([],  'Book added to cart successfully.');
             } catch (Exception $e) {
                 $this->error('Failed to add book to cart: ' . $e->getMessage(), 500);
             }
-        }else {
+        } else {
             $this->error([], 'Invalid request method', 405);
         }
     }
     // Delete Book From Cart items
-    public function deleteFromCart(){
+    public function deleteFromCart()
+    {
         if ($_SERVER['METHOD_REQUEST'] === "POST") {
             try {
                 if (!isset($_SESSION['user']['userID'])) {
@@ -56,23 +65,25 @@ class CartController extends Controller
                     $this->error([], 'Cart not found', 404);
                     return;
                 }
-    
+
                 if (!isset($_POST['bookID'])) {
                     $this->error([], 'Book not found', 404);
                     return;
                 }
                 $bookID = $_POST['bookID'];
-                $this->cartItemRepository->deleteFromCart($cart->cartID , $bookID);
-                $this->success([] ,  'Book Deleted to cart successfully.');
+
+                $this->cartItemRepository->deleteFromCart($cart->cartID, $bookID);
+                $this->success([],  'Book Deleted to cart successfully.');
             } catch (Exception $e) {
                 $this->error('Failed to add book to cart: ' . $e->getMessage(), 500);
             }
-        }else {
+        } else {
             $this->error([], 'Invalid request method', 405);
         }
     }
 
-    public function showBookInCart(){
+    public function showBookInCart()
+    {
         if ($_SERVER['METHOD_REQUEST'] === 'GET') {
             try {
                 $authUser = $_SESSION['user']['userID'];
@@ -82,7 +93,7 @@ class CartController extends Controller
                     return;
                 }
                 $data = $this->cartItemRepository->showBooksInCart($cart->cartID);
-                $this->success($data , 'get all books inside cart' , 200);
+                $this->success($data, 'get all books inside cart', 200);
             } catch (Exception $e) {
                 $this->error([], 'Error to get All books inside Cart' . $e->getMessage());
             }

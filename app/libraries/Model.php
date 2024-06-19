@@ -72,10 +72,29 @@
                 $statement = $this->connection->prepare($query);
                 $values = array_merge(array_values($data) , array_values($condition));
                 $statement->execute($values);
+            }catch (Exception $e) {
+                    die("Error throw database" . $e->getMessage());
+                }
+            
+        }
+    
+        public function updateOneColumn($column, $value, $condition) {
+
+            try {
+                foreach ($condition as $column) {
+                    $whereConditions = $column . ' = ?';
+                }
+            
+                $query = "UPDATE {$this->tablename} SET {$column} = ? WHERE {$whereConditions}";
+                $statement = $this->connection->prepare($query);
+                $executeValues = array_merge([$value], array_values($condition));
+                $statement->execute($executeValues);
             } catch (Exception $e) {
-                die("Error throw database" . $e->getMessage());
+                die("Error thrown by database: " . $e->getMessage());
             }
         }
+        
+    
 
         public function findByColumn($value , $column){
             try {

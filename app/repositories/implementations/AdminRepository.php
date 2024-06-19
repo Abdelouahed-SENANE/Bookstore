@@ -1,16 +1,16 @@
 <?php 
     class AdminRepository implements IAdminRepository {
-        private $repository;
+        private $admin;
 
         public function __construct(Admin $admin)
         {
-            $this->repository = $admin;
+            $this->admin = $admin;
         }
         public function store(Admin $admin)
         {
             $data = [
                 'userID' => $admin->__get('userID')
             ];
-            $this->repository->save($data);
+            $this->admin->save($data);
         }
     }

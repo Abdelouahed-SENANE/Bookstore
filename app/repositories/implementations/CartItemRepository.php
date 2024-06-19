@@ -3,12 +3,12 @@
 
 class CartItemRepository implements ICartItemRepository
 {
-    private $repository;
+    private $cartItem;
     private $connection;
     public function __construct(CartItem $cartItem)
     {
         $this->connection = Database::getInstance()->connect();
-        $this->repository = $cartItem;
+        $this->cartItem = $cartItem;
     }
     public function addToCart($cartID, $bookID , $quantity)
     {
@@ -17,7 +17,7 @@ class CartItemRepository implements ICartItemRepository
             'bookID' => $bookID,
             'quantity' => $quantity
         ];
-        $this->repository->save($data);
+        $this->cartItem->save($data);
     }
     public function deleteFromCart($cartID, $bookID)
     {
@@ -34,6 +34,6 @@ class CartItemRepository implements ICartItemRepository
 
     public function showBooksInCart($cartID)
     {
-        return $this->repository->findByColumn('cartID' , $cartID);
+        return $this->cartItem->findByColumn('cartID' , $cartID);
     }
 }

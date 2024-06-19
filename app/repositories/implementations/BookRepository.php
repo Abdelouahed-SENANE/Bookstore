@@ -18,6 +18,7 @@
                     'publishDate' => $book->__get('publishDate'),
                     'bookImage' => $book->__get('bookImage'),
                     'price' => $book->__get('price'),
+                    'quantity' => $book->__get('quantity'),
                 ];
 
                 $this->book->save($data);
@@ -48,5 +49,8 @@
             public function delete($bookID)
             {
                 $this->book->delete('bookID' , $bookID);
+            }
+            public function searchBooks($column , $value) {
+                return $this->book->searchByColumn($column , $value);
             }
         }

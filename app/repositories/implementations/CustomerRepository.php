@@ -1,16 +1,16 @@
 <?php 
     class CustomerRepositoy implements ICustomerRepository {
-        private $repository;
+        private $customer;
 
         public function __construct(Customer $customer)
         {
-            $this->repository = $customer;
+            $this->customer = $customer;
         }
         public function store(Customer $customer)
         {
             $data = [
                 'userID' => $customer->__get('userID')
             ];
-            $this->repository->save($data);
+            $this->customer->save($data);
         }
     }

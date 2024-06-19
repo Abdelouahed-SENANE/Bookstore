@@ -17,7 +17,9 @@ class BookController extends Controller{
                 'title' => $_POST['title'],
                 'description' => $_POST['description'],
                 'publishDate' => $_POST['publishDate'],
-                'price' => $_POST['price']
+                'price' => $_POST['price'],
+                'quantity' => $_POST['quantity'],
+                'categoryID' => $_POST['categoryID']
             ];
             $bookFile = $_FILES['bookImage'] ?? null;
             $validated = validateBookData($bookData);
@@ -29,8 +31,10 @@ class BookController extends Controller{
                 $newBook->__set('title', $validateData['title']);
                 $newBook->__set('description', $validateData['description']);
                 $newBook->__set('publishDate', $validateData['publishDate']);
+                $newBook->__set('quantity', $validateData['quantity']);
                 $newBook->__set('bookImage', $bookFile['name']);
                 $newBook->__set('price', $validateData['price']);
+                $newBook->__set('categoryID', $validateData['categoryID']);
 
                 $this->repository->store($newBook);
                 $data = ['newBook' => $newBook];
@@ -58,13 +62,14 @@ class BookController extends Controller{
             $this->error('Book not found.', 404);
             return;
         }
-
         $bookData = [
             'ISBN' => $_POST['ISBN'],
             'title' => $_POST['title'],
             'description' => $_POST['description'],
             'publishDate' => $_POST['publishDate'],
-            'price' => $_POST['price']
+            'price' => $_POST['price'],
+            'quantity' => $_POST['quantity'],
+            'categoryID' => $_POST['categoryID']
         ];
 
         $bookFile = $_FILES['bookImage'] ?? null;
@@ -83,6 +88,7 @@ class BookController extends Controller{
             $existingBook->__set('title', $validateData['title']);
             $existingBook->__set('description', $validateData['description']);
             $existingBook->__set('publishDate', $validateData['publishDate']);
+            $existingBook->__set('categoryID', $validateData['categoryID']);
             if ($validateImage === true) {
                 $existingBook->__set('bookImage', $bookFile['name']); 
             }
@@ -130,6 +136,26 @@ class BookController extends Controller{
             }
         } else {
             $this->error('Invalid request method', 405);
+        }
+    }
+
+    public function searchBook() {
+        if ($_SERVER['METHOD_REQUEST'] === 'GET') {
+            if (!isset($_GET['searchBook'])) {
+                $this->error('The books not founds', 404);
+                return;
+            }
+            $searchValue = $_GET['searchBook'];
+            try {
+                $searchByTitle = $this->repository->searchBooks('title' , $searchValue);
+                $searchByDesc = $this->repository->searchBooks('description' , $searchValue);
+                $result = array_merge($searchByTitle , $searchByDesc);
+                $this->success($result , 'Fetched all books successfull' , 200);
+                return;
+            } catch (Exception $e) {
+                $this->error([] , 'Error throw Database' . $e->getMessage() , 500);
+                return;
+            }
         }
     }
 }

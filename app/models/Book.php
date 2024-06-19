@@ -8,6 +8,8 @@ class Book extends Model {
     private DateTime $publishDate;
     private string $bookImage;
     private float $price;
+    private int $quantity;
+    private int $categotyID;
 
     public function __construct()
     {
