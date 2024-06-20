@@ -94,15 +94,12 @@ class BookController extends Controller{
             }
             $existingBook->__set('price', $validateData['price']);
 
-            // Store the updated book
             $this->repository->update($existingBook);
 
-            // Respond with success message
             $data = ['updatedBook' => $existingBook];
             $this->success($data, 'Book updated successfully.');
             return;
         } else {
-            // Handle errors if validation fails or image upload fails
             $errors = [];
             if (!$validated['isValid']) {
                 $errors['bookData'] = $validated['errors'];

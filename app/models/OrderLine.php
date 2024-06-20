@@ -4,7 +4,6 @@
         private int $orderID;
         private int $bookID;
         private int $quantity;
-        private float $price;
         
         public function __construct()
         {

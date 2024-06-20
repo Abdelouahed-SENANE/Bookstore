@@ -32,11 +32,16 @@
             
         }
 
-        public function updateStatusOrder(Order $order){
+        public function updateStatusOrder($orderID , $status){
 
             $condition = [
-                'orderID' => $order->__get('orderID')
+                'orderID' => $orderID
             ];
-             $this->order->updateOneColumn('status' , $order->__get('status') , $condition);
+             $this->order->updateOneColumn('status' , $status, $condition);
+        }
+
+        public function getOneOrderById($orderID)
+        {
+            return $this->order->findOneByColumn('orderID' , $orderID);
         }
     }

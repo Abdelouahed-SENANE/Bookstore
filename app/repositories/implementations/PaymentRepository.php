@@ -17,4 +17,17 @@
 
             return $this->payement->save($data);
         }
+
+        public function updateStatus($sessionID , $value)
+        {
+            $condition = [
+                'sessionID' => $sessionID
+            ];
+            $this->payement->updateOneColumn('status' , $value , $condition);
+        }
+
+        public function getPaymentBySessionID(string $sessionID)
+        {
+            return $this->payement->findOneByColumn('sesseionID' , $sessionID);
+        }
     }

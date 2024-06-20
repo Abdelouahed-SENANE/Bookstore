@@ -84,11 +84,12 @@
                 foreach ($condition as $column) {
                     $whereConditions = $column . ' = ?';
                 }
-            
+                
                 $query = "UPDATE {$this->tablename} SET {$column} = ? WHERE {$whereConditions}";
                 $statement = $this->connection->prepare($query);
                 $executeValues = array_merge([$value], array_values($condition));
                 $statement->execute($executeValues);
+                return $this->connection->lastInsertId();
             } catch (Exception $e) {
                 die("Error thrown by database: " . $e->getMessage());
             }

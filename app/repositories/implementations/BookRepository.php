@@ -37,6 +37,7 @@
                     'publishDate' => $book->__get('publishDate'),
                     'price' => $book->__get('price'),
                 ];
+                
                 if (!empty($book->__get('bookImage'))) {
                     $data['bookImage'] = $book->__get('bookImage');
                 }

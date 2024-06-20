@@ -26,7 +26,7 @@ class PaymentController extends Controller
         $authUser = $_SESSION['user']['userID'];
         $cart = $this->cartRepository->findCartOfCustomer($authUser);
 
-        if (!empty($cart)) {
+        if (empty($cart)) {
             $this->error([], 'Cart not found', 404);
             return;
         }
@@ -61,11 +61,11 @@ class PaymentController extends Controller
             $orderID = $this->orderRepository->store($newOrder);
 
             $newPayment = new Payment();
-            $newPayment->__set('orderID' , $orderID);
-            $newPayment->__set('amount' , $this->calculateTotalPrice($books));
-            $newPayment->__set('status' , 'PENDIND');
-            $newPayment->__set($session->id , 'sessionID');
-            $this->success([$_SESSION['sessionID']=> $session->id], 'Session Created Succefully ', 200);
+            $newPayment->__set('orderID', $orderID);
+            $newPayment->__set('amount', $this->calculateTotalPrice($books));
+            $newPayment->__set('status', 'PENDIND');
+            $newPayment->__set($session->id, 'sessionID');
+            $this->success([$_SESSION['sessionID'] => $session->id], 'Session Created Succefully ', 200);
         } catch (\Exception $e) {
             $this->error([], 'Error :' . $e->getMessage(), 500);
         }
@@ -74,8 +74,36 @@ class PaymentController extends Controller
     public function handlePaymentSuccess()
     {
         $sessionID = $_SESSION['sessionID'];
-        
+        if (!isset($sessionID)) {
+            $this->error([], 'Sesseion ID is not found', 404);
+            return;
+        }
+        $authUser = $_SESSION['user']['userID'];
+        if (isset($authUser)) {
+            $this->error([], 'User ID is not found', 404);
+            return;
+        }
+        $cart = $this->cartRepository->findCartOfCustomer($authUser);
+        $cartItems = $this->cartItemRepository->showBooksInCart($cart->cartID);
+        try {
+            $paymentID = $this->paymentRepository->updateStatus($sessionID, "PAID");
+            $payment = $this->paymentRepository->getPaymentBySessionID($sessionID);
+            if (!isset($payment)) {
+                $this->error([], 'Payment is not found', 404);
+                return;
+            }
+            $order = $this->orderRepository->getOneOrderById($payment->orderID);
+            $orderID = $this->orderRepository->updateStatusOrder($order->orderID , 'PAID');
+
+            $this->orderLineRepository->store($cartItems , $orderID);
+
+            $this->cartItemRepository->clearCartItem($cart->cartID);
+        } catch (Exception $e) {
+            $this->error([], 'Error Database' . $e->getMessage(), 500);
+            return;
+        }
     }
+
 
     private function calculateTotalPrice(array $items)
     {

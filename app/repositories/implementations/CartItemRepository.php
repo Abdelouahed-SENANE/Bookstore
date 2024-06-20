@@ -31,7 +31,9 @@ class CartItemRepository implements ICartItemRepository
             die('Error Throw Database' . $e->getMessage());
         }
     }
-
+    public function clearCartItem($cartID ) {
+        $this->cartItem->delete('cartID' , $cartID);
+    }
     public function showBooksInCart($cartID)
     {
         return $this->cartItem->findByColumn('cartID' , $cartID);
